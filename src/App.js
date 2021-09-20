@@ -1,20 +1,27 @@
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import "./App.css";
 
-const getScrapeResults = (curLink, setTitles, setPrices, setImages) => {
+const getScrapeResults = (
+  curLink,
+  setTitles,
+  setPrices,
+  setImages,
+  setIsLoading
+) => {
   console.log(curLink);
-  const result = axios
-    // .get("https://price-guesser-api1.herokuapp.com/scraperTest", {
-    .post("http://localhost:5000/scraperTest", {
+  setIsLoading(true);
+
+  axios
+    .post("https://price-guesser-api1.herokuapp.com/scraperTest", {
       link: curLink,
     })
     .then((res) => {
       setTitles(res.data.titles);
       setPrices(res.data.prices);
       setImages(res.data.images);
-      // console.log("here", res.data);
+      setIsLoading(false);
     });
 };
 
@@ -23,13 +30,29 @@ const App = () => {
   const [prices, setPrices] = useState([]);
   const [images, setImages] = useState([]);
 
-  const [curQuery, setCurQuery] = useState("");
+  const [curQuery, setCurQuery] = useState("office supplies");
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    console.log("wow somebodys reading");
+    console.log("anyway here are the links");
+  }, []);
 
   return (
     <div className="App">
+      <div className="page-subtitle">
+        This UI demonstrates the scraper built for <b>Price Guesser</b>.
+      </div>
+      <a
+        className="page-PG-link"
+        href="https://priceguesser.netlify.app"
+        target="_blank"
+        rel="noreferrer"
+      >
+        <i>Check it out here!</i>
+      </a>
       <div className="page-title">Enter an Amazon item/category</div>
-      <div className="url-form">
+      <form className="url-form">
         <input
           className="url-form__input"
           placeholder="e.g. office supplies"
@@ -37,27 +60,35 @@ const App = () => {
             setCurQuery(event.target.value);
           }}
           type={"text"}
+          defaultValue={"office supplies"}
         ></input>
         <button
           className="url-form__button"
-          onClick={() => {
-            setIsLoading(true);
-            console.log(isLoading);
+          onClick={(event) => {
+            event.preventDefault();
             const curLink = `https://www.amazon.com/s?k=${curQuery.replace(
               " ",
               "+"
             )}`;
-            getScrapeResults(curLink, setTitles, setPrices, setImages);
-            setIsLoading(false);
-            console.log(isLoading);
-            console.log("title result", titles);
+            getScrapeResults(
+              curLink,
+              setTitles,
+              setPrices,
+              setImages,
+              setIsLoading
+            );
           }}
+          disabled={isLoading}
         >
           Scrape!
         </button>
-      </div>
-      {isLoading && <div className="loading">loading...</div>}
-      {titles.length > 0 && (
+      </form>
+      {isLoading && (
+        <div className="loading">
+          <i>loading...</i>
+        </div>
+      )}
+      {!!titles && titles.length > 0 && (
         <table className="results-table">
           <tbody>
             <tr className="results-table__header">
@@ -68,11 +99,17 @@ const App = () => {
             </tr>
             {titles.map((a, index) => {
               return (
-                <tr className={`results-table__result`} key={index}>
+                <tr className={`tr--${index % 2}`} key={index}>
                   <td>{index + 1}</td>
                   <td>{titles[index]}</td>
                   <td>{prices[index]}</td>
-                  <td>{images[index]}</td>
+                  <td>
+                    {
+                      <a href={images[index]} target="_blank" rel="noreferrer">
+                        {images[index]}
+                      </a>
+                    }
+                  </td>
                 </tr>
               );
             })}
