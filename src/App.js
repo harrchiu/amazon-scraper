@@ -40,8 +40,24 @@ const App = () => {
 
   return (
     <div className="App">
+      <div className="contact">
+        <a
+          href="https://github.com/harrchiu/amazon-scraper"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Github
+        </a>
+        <a
+          href="https://www.linkedin.com/in/harrchiu/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          @harrchiu
+        </a>
+      </div>
       <div className="page-subtitle">
-        This UI demonstrates the scraper built for <b>Price Guesser</b>.
+        This UI demonstrates the scraper that I built for <b>Price Guesser</b>.
       </div>
       <a
         className="page-PG-link"
