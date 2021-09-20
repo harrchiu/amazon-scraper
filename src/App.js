@@ -32,6 +32,8 @@ const App = () => {
 
   const [curQuery, setCurQuery] = useState("office supplies");
   const [isLoading, setIsLoading] = useState(false);
+  const [didSayGiftCard, setDidSayGiftCard] = useState(false);
+  const [filled, setFilled] = useState(false);
 
   useEffect(() => {
     console.log("wow somebodys reading");
@@ -71,9 +73,18 @@ const App = () => {
       <form className="url-form">
         <input
           className="url-form__input"
-          placeholder="e.g. office supplies"
+          placeholder={
+            didSayGiftCard && filled
+              ? "e.g. live laugh love signs"
+              : `if you liked that try "gift card"`
+          }
           onChange={(event) => {
             setCurQuery(event.target.value);
+            if (event.target.value === "") {
+              setDidSayGiftCard(true);
+            } else if (didSayGiftCard) {
+              setFilled(true);
+            }
           }}
           type={"text"}
           defaultValue={"office supplies"}
